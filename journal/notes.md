@@ -7,3 +7,15 @@ Instead of just guessing a straight line between two points, Newton's formula lo
 1. First Differences (\(\Delta y\)): How much does \(y\) change from one step to the next? (e.g., \(y_2 - y_1\))
 2. Second Differences (\(\Delta ^{2}y\)): How much does the rate of change itself accelerate or slow down? (Like tracking if a car is speeding up or braking).
 3. Higher Differences: Looking at deeper and deeper patterns in the numbers.
+
+## Trees
+A tree is a foundational, non-linear, hierarchical data structure composed of collection entities called nodes that are connected by edges. Unlike linear structures like arrays, stacks, or linked lists, trees store data in a structural parent-child hierarchy with no loops or cycles.
+
+• Root: The single topmost node in a tree that has no incoming edges (no parent). Every traversal starts here.
+• Edge: The link or pointer connecting one node to another, representing their relationship.
+• Parent / Child: A node directly above another is its parent; the node below it is its child.
+• Leaf: Nodes located at the absolute bottom of a tree that have zero outgoing edges (no children).
+• Subtree: A standalone tree structure nested within a larger tree, consisting of a node and all of its descendants.
+• Height: The maximum number of edges from a specific node down to the furthest leaf. The height of the entire tree is the height of its root.
+• Depth: The number of edges from the root node to a specific node.
+
