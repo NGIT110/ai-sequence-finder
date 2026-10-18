@@ -19,3 +19,10 @@ A tree is a foundational, non-linear, hierarchical data structure composed of co
 • Height: The maximum number of edges from a specific node down to the furthest leaf. The height of the entire tree is the height of its root.
 • Depth: The number of edges from the root node to a specific node.
 
+## Occam's Razor
+A problem-solving principle stating that among competing hypotheses, you should prefer the one that makes the fewest assumptions or uses the simplest explanation.
+score = error + λ × size
+When lamda == 0, the score function is effectively equal to error, however, when lambda is incredibly large, score is effectively equal to size
+
+## Recursion
+A process where a concept, function, or system is defined in terms of a simpler or previous version of itself
