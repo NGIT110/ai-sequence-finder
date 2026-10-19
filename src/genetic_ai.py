@@ -1,6 +1,11 @@
 import random
 
+# Global constants
 operators = ["*", "-", "+"]
+lam = 0.1
+k = 10
+mutation_rate = 0.2
+
 
 # Completes operation
 def operation(operator, left, right):
@@ -124,32 +129,95 @@ def tournament(population, target, lam, k):
 
 
 # Returns a mutated tree
-def mutate(tree, rate):
+def mutate(tree, mutation_rate):
 
-    if random.random() < rate:
+    if random.random() < mutation_rate:
         return random_tree(2)
     
     else:
 
         if isinstance(tree, tuple):
 
-            new_left = mutate(tree[1], rate)
-            new_right = mutate(tree[2], rate)
+            new_left = mutate(tree[1], mutation_rate)
+            new_right = mutate(tree[2], mutation_rate)
             return (tree[0], new_left, new_right)
         
         else:
             return tree
 
 
-# Crossover function
+# Returns all subtrees within a tree
+def all_subtrees(tree):
+
+    if not isinstance(tree, tuple):
+        return [tree]
+    
+    else:
+
+        left = all_subtrees(tree[1])
+        right = all_subtrees(tree[2])
+
+    return [tree] + left + right 
 
 
-"""
-t = ("*", "n", "n")
+# Retruns the crossover between 2 trees
+def crossover(parent_a, parent_b, crossover_rate=None, subtree_from_b=None):
+
+    if crossover_rate is None:
+        crossover_rate = 1/count_nodes(parent_a)
+
+    if subtree_from_b is None:
+        subtree_from_b = random.choice(all_subtrees(parent_b))
+
+    if random.random() < crossover_rate:
+        return subtree_from_b
+
+    else:
+
+        if isinstance(parent_a, tuple):
+
+            new_left = crossover(parent_a[1], parent_b, crossover_rate, subtree_from_b)
+            new_right = crossover(parent_a[2], parent_b, crossover_rate, subtree_from_b)
+
+            return (parent_a[0], new_left, new_right)
+        
+        else:
+            return parent_a
+
+
+# Evolves the population
+def evolve(target, pop_size, depth, generations, lam, k, mutation_rate):
+
+    pop = make_population(pop_size, depth)
+
+    for gen in range(generations):
+
+        best_tree = ()
+        best_score = float("inf")
+
+        for tree in pop:
+
+            fitness_score = fitness(tree, target, lam)
+
+            if best_score > fitness_score:
+
+                best_tree = tree
+                best_score = fitness_score
+
+        print(best_score)
+
+
+
+
+
+
+
+t = ("-", ("+", ("*", "n", "n"), "n"), 2)
+tree_a = ("*", "n", "n")
+tree_b = ("-", "n", 3)
 target = [1, 4, 9, 16, 25]
 
-
-
+"""
 print(evaluate(t, 5))
 print(sequence_from_tree(t, 5))
 
@@ -180,4 +248,12 @@ print(best_t, best_s)
 
 
 print(mutate(t, 0.2))
+
+
+print(all_subtrees(tree_b))
+
+
+print(crossover(tree_a, tree_b))
 """
+
+print(evolve(target,  100, 3, 3, lam, k, mutation_rate))
