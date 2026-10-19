@@ -123,9 +123,31 @@ def tournament(population, target, lam, k):
     return best_tree, best_score
 
 
+# Returns a mutated tree
+def mutate(tree, rate):
+
+    if random.random() < rate:
+        return random_tree(2)
+    
+    else:
+
+        if isinstance(tree, tuple):
+
+            new_left = mutate(tree[1], rate)
+            new_right = mutate(tree[2], rate)
+            return (tree[0], new_left, new_right)
+        
+        else:
+            return tree
+
+
+# Crossover function
+
+
 """
 t = ("*", "n", "n")
-target = [1, 4, 9, 16, 27]
+target = [1, 4, 9, 16, 25]
+
 
 
 print(evaluate(t, 5))
@@ -155,4 +177,7 @@ print(make_population(10, 3))
 pop = make_population(200, 3)
 best_t, best_s = tournament(pop, [1, 4, 9, 16, 25], 0.1, 100)
 print(best_t, best_s)
+
+
+print(mutate(t, 0.2))
 """
