@@ -1,3 +1,5 @@
+import random
+
 operators = ["*", "-", "+"]
 
 # Completes operation
@@ -68,18 +70,30 @@ def count_nodes(tree, nodes=0):
 
     return nodes
 
+
 # Defines a fitness score
 def fitness(tree, target, lam):
     return error(tree, target) + lam * count_nodes(tree)
 
 
-
+# Creates a random tree
+def random_tree(depth):
+    if depth == 0:
+        return random.choice(["n", 1, 2, 3])
+    else:
+        if random.random() < 0.2:
+            return random.choice(["n", 1, 2, 3])
+        else:
+            operator = random.choice(operators)
+            left, right = random_tree(depth-1), random_tree(depth-1)
+            return (operator, left, right)
 
 
 
 t = ("*", "n", "n")
 target = [1, 4, 9, 16, 27]
 
+"""
 print(evaluate(t, 5))
 print(sequence_from_tree(t, 5))
 
@@ -90,3 +104,12 @@ print(fitness(t, target, 0.5))
 t1 = ("+", ("*", "n", "n"), ("*", ("-", "n", "n"), "n"))
 print(fitness(t1, target, 0.5))
 
+print(random_tree(2))
+"""
+
+depth = 3
+for _ in range(10):
+    tree = random_tree(depth)
+    print(tree)
+    print(evaluate(tree, 2))
+    print(count_nodes(tree))

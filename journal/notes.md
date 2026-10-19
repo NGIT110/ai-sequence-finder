@@ -19,6 +19,8 @@ A tree is a foundational, non-linear, hierarchical data structure composed of co
 • Height: The maximum number of edges from a specific node down to the furthest leaf. The height of the entire tree is the height of its root.
 • Depth: The number of edges from the root node to a specific node.
 
+You could use classes with a Node Object however, I chose to use tuples for simplicity.
+
 ## Occam's Razor
 A problem-solving principle stating that among competing hypotheses, you should prefer the one that makes the fewest assumptions or uses the simplest explanation.
 score = error + λ × size
@@ -26,3 +28,5 @@ When lamda == 0, the score function is effectively equal to error, however, when
 
 ## Recursion
 A process where a concept, function, or system is defined in terms of a simpler or previous version of itself
+
+A wrapper function is a subroutine that calls another function or system call with little or no extra work, acting as an intermediary layer to change or hide implementation details
