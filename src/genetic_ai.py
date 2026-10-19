@@ -89,11 +89,45 @@ def random_tree(depth):
             return (operator, left, right)
 
 
+# Makes a population of trees
+def make_population(size, depth):
 
+    population = []
+
+    for _ in range(size):
+        tree = random_tree(depth)
+        population.append(tree)
+
+    return population
+
+
+# Returns the best tree out of a population
+def tournament(population, target, lam, k): 
+    # k is the number of trees that compete
+    # lam is for the fitness function
+    
+    contestants = random.sample(population, k)
+
+    best_tree = ()
+    best_score = float("inf") # Very large number
+
+    for contestant in contestants:
+
+        score = fitness(contestant, target, lam)
+
+        if score < best_score:
+
+            best_score = score
+            best_tree = contestant
+
+    return best_tree, best_score
+
+
+"""
 t = ("*", "n", "n")
 target = [1, 4, 9, 16, 27]
 
-"""
+
 print(evaluate(t, 5))
 print(sequence_from_tree(t, 5))
 
@@ -105,7 +139,7 @@ t1 = ("+", ("*", "n", "n"), ("*", ("-", "n", "n"), "n"))
 print(fitness(t1, target, 0.5))
 
 print(random_tree(2))
-"""
+
 
 depth = 3
 for _ in range(10):
@@ -113,3 +147,12 @@ for _ in range(10):
     print(tree)
     print(evaluate(tree, 2))
     print(count_nodes(tree))
+
+
+print(make_population(10, 3))
+
+
+pop = make_population(200, 3)
+best_t, best_s = tournament(pop, [1, 4, 9, 16, 25], 0.1, 100)
+print(best_t, best_s)
+"""

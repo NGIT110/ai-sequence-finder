@@ -30,3 +30,6 @@ When lamda == 0, the score function is effectively equal to error, however, when
 A process where a concept, function, or system is defined in terms of a simpler or previous version of itself
 
 A wrapper function is a subroutine that calls another function or system call with little or no extra work, acting as an intermediary layer to change or hide implementation details
+
+## Sampling
+In function tournament, when I used k = a small number e.g 2, 5, the scores were relatively high and produced a wrong tree, however, when U used k = 100, I got the right solution, however, this leads to the population filling up with copies of one rule.
