@@ -4,7 +4,7 @@ import random
 operators = ["*", "-", "+"]
 lam = 0.1
 k = 10
-mutation_rate = 0.2
+mutation_rate = 0.05
 
 
 # Completes operation
@@ -204,7 +204,28 @@ def evolve(target, pop_size, depth, generations, lam, k, mutation_rate):
                 best_tree = tree
                 best_score = fitness_score
 
-        print(best_score)
+        if error(best_tree, target) == 0:
+            return best_tree, gen
+
+        print(gen, round(best_score, 3))
+
+        new_pop = [best_tree]
+
+        while len(new_pop) < pop_size:
+
+            parent_a = (tournament(pop, target, lam, k))[0]
+            parent_b = (tournament(pop, target, lam, k))[0]
+
+            child = crossover(parent_a, parent_b)
+
+            mutated_child = mutate(child, mutation_rate)
+            new_pop.append(mutated_child)
+
+        pop = new_pop
+
+    return best_tree
+
+
 
 
 
