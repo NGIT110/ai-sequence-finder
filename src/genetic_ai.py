@@ -186,11 +186,11 @@ def crossover(parent_a, parent_b, crossover_rate=None, subtree_from_b=None):
 
 
 # Evolves the population
-def evolve(target, pop_size, depth, generations, lam, k, mutation_rate):
+def evolve(target, pop_size, depth, generations, lam, k, mutation_rate, max_nodes=40):
 
     pop = make_population(pop_size, depth)
 
-    for gen in range(generations):
+    for gen in range(generations+1):
 
         best_tree = ()
         best_score = float("inf")
@@ -205,9 +205,10 @@ def evolve(target, pop_size, depth, generations, lam, k, mutation_rate):
                 best_score = fitness_score
 
         if error(best_tree, target) == 0:
-            return best_tree, gen
+            return best_tree, gen, True
 
-        print(gen, round(best_score, 3))
+        if gen == generations:
+            break
 
         new_pop = [best_tree]
 
@@ -217,64 +218,65 @@ def evolve(target, pop_size, depth, generations, lam, k, mutation_rate):
             parent_b = (tournament(pop, target, lam, k))[0]
 
             child = crossover(parent_a, parent_b)
-
             mutated_child = mutate(child, mutation_rate)
-            new_pop.append(mutated_child)
+
+            if count_nodes(mutated_child) <= max_nodes:
+                new_pop.append(mutated_child)
 
         pop = new_pop
 
-    return best_tree
+    return best_tree, generations, False
 
 
 
 
 
+if __name__ == "__main__":
+    t = ("-", ("+", ("*", "n", "n"), "n"), 2)
+    tree_a = ("*", "n", "n")
+    tree_b = ("-", "n", 3)
+    target = [1, 4, 9, 16, 25]
+
+    """
+    print(evaluate(t, 5))
+    print(sequence_from_tree(t, 5))
+
+    print(error(t, target))
+    print(count_nodes(t))
+    print(fitness(t, target, 0.5))
+
+    t1 = ("+", ("*", "n", "n"), ("*", ("-", "n", "n"), "n"))
+    print(fitness(t1, target, 0.5))
+
+    print(random_tree(2))
 
 
+    depth = 3
+    for _ in range(10):
+        tree = random_tree(depth)
+        print(tree)
+        print(evaluate(tree, 2))
+        print(count_nodes(tree))
 
 
-t = ("-", ("+", ("*", "n", "n"), "n"), 2)
-tree_a = ("*", "n", "n")
-tree_b = ("-", "n", 3)
-target = [1, 4, 9, 16, 25]
-
-"""
-print(evaluate(t, 5))
-print(sequence_from_tree(t, 5))
-
-print(error(t, target))
-print(count_nodes(t))
-print(fitness(t, target, 0.5))
-
-t1 = ("+", ("*", "n", "n"), ("*", ("-", "n", "n"), "n"))
-print(fitness(t1, target, 0.5))
-
-print(random_tree(2))
+    print(make_population(10, 3))
 
 
-depth = 3
-for _ in range(10):
-    tree = random_tree(depth)
-    print(tree)
-    print(evaluate(tree, 2))
-    print(count_nodes(tree))
+    pop = make_population(200, 3)
+    best_t, best_s = tournament(pop, [1, 4, 9, 16, 25], 0.1, 100)
+    print(best_t, best_s)
 
 
-print(make_population(10, 3))
+    print(mutate(t, 0.2))
 
 
-pop = make_population(200, 3)
-best_t, best_s = tournament(pop, [1, 4, 9, 16, 25], 0.1, 100)
-print(best_t, best_s)
+    print(all_subtrees(tree_b))
 
 
-print(mutate(t, 0.2))
+    print(crossover(tree_a, tree_b))
 
+    print(evolve(target,  100, 3, 3, lam, k, mutation_rate))
+    """
 
-print(all_subtrees(tree_b))
-
-
-print(crossover(tree_a, tree_b))
-"""
-
-print(evolve(target,  100, 3, 3, lam, k, mutation_rate))
+    tree, gen, solved = evolve(target, 200, 3, 30, 0.1, 5, 0.1)
+    print(tree, gen, solved)
