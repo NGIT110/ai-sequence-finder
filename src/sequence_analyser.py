@@ -1,4 +1,5 @@
-from math import comb
+from math import comb, factorial
+from fractions import Fraction
 
 
 # Checks if every number in a list is the same
@@ -17,6 +18,12 @@ def finite_differences(sequence):
     current = sequence
 
     while True:
+
+        # A level needs at least 2 numbers, or we can't trust it
+        if len(current) < 2:
+            return None
+
+
         # Save the first number of this level
         first_values.append(current[0])
 
@@ -44,8 +51,114 @@ def nth_term(first_values, n):
     return total
 
 
+# Multiplies a polynomial by (n - c)
+def multiply_by_n_minus(poly, c):
+    new_poly = [0] * (len(poly) + 1)
+    for i in range(0, len(poly)):
+        new_poly[i + 1] = new_poly[i + 1] + poly[i]
+        new_poly[i] = new_poly[i] - c * poly[i]
+    return new_poly
 
-seq = [1, 8, 27, 64, 125]
-values, degree = finite_differences(seq)
-print(values, degree)        
-print(nth_term(values, 6))   
+
+# Turns the first values into ordinary coefficients of n
+# Uses C(n-1, k) = (n-1)(n-2)...(n-k) / k!
+def to_coefficients(first_values):
+    total = [Fraction(0)] * len(first_values)
+    poly = [Fraction(1)]
+
+    for k in range(0, len(first_values)):
+        if k > 0:
+            poly = multiply_by_n_minus(poly, k)
+        for i in range(0, len(poly)):
+            total[i] = total[i] + first_values[k] * poly[i] / factorial(k)
+
+    return total
+
+
+# Writes one term like 3n^2 (c is always positive here)
+def term_text(c, power):
+    if c.denominator != 1:
+        number = "(" + str(c) + ")"
+    else:
+        number = str(c)
+
+    if power == 0:
+        return number
+
+    if power == 1:
+        variable = "n"
+    else:
+        variable = "n^" + str(power)
+
+    if c == 1:
+        return variable
+    return number + variable
+
+
+# Writes the whole rule as text, highest power first
+def rule_as_text(coefficients):
+    text = ""
+
+    for power in range(len(coefficients) - 1, -1, -1):
+        c = coefficients[power]
+
+        if c == 0:
+            continue
+
+        if c < 0:
+            sign = " - "
+            c = -c
+        else:
+            sign = " + "
+
+        piece = term_text(c, power)
+
+        if text == "":
+            if sign == " - ":
+                text = "-" + piece
+            else:
+                text = piece
+        else:
+            text = text + sign + piece
+
+    if text == "":
+        text = "0"
+
+    return text
+
+
+# Tries to find a polynomial rule, and returns everything in one dictionary
+def analyse(sequence):
+    result = finite_differences(sequence)
+
+    if result is None:
+        return {"solved": False}
+
+    first_values, degree = result
+    coefficients = to_coefficients(first_values)
+
+    return {
+        "solved": True,
+        "kind": "polynomial",
+        "degree": degree,
+        "rule": rule_as_text(coefficients),
+        "next_term": nth_term(first_values, len(sequence) + 1),
+    }
+
+
+if __name__ == "__main__":
+    tests = [
+        [1, 4, 9, 16, 25],
+        [1, 8, 27, 64, 125],
+        [2, 5, 8, 11, 14],
+        [3, 6, 11, 18, 27],
+        [5, 5, 5, 5],
+        [1, 3, 6, 10, 15],
+        [10, 7, 4, 1, -2],
+        [1, 8, 27, 64, 126],
+        [1, 8, 27, 64],
+        [1, 1, 2, 3, 5, 8, 13],
+    ]
+    for seq in tests:
+        print(seq, "->", analyse(seq))
+

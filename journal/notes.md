@@ -8,6 +8,10 @@ Instead of just guessing a straight line between two points, Newton's formula lo
 2. Second Differences (\(\Delta ^{2}y\)): How much does the rate of change itself accelerate or slow down? (Like tracking if a car is speeding up or braking).
 3. Higher Differences: Looking at deeper and deeper patterns in the numbers.
 
+Think of one step forward as “keep my current number, and add the difference below it”. If you call the difference operation D, a step forward means (1 + D). Taking n - 1 steps from the first term means applying (1 + D) n - 1 times, which is (1 + D)^(n-1).
+
+You know how to expand (1 + x)^m from the binomial theorem, and its coefficients are exactly C(m, k). So that’s where the formula comes from: the binomial theorem applied to “repeatedly step forward”.
+
 ## Trees
 A tree is a foundational, non-linear, hierarchical data structure composed of collection entities called nodes that are connected by edges. Unlike linear structures like arrays, stacks, or linked lists, trees store data in a structural parent-child hierarchy with no loops or cycles.
 
