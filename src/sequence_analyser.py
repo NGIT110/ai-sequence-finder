@@ -70,7 +70,7 @@ def to_coefficients(first_values):
         if k > 0:
             poly = multiply_by_n_minus(poly, k)
         for i in range(0, len(poly)):
-            total[i] = total[i] + first_values[k] * poly[i] / factorial(k)
+            total[i] = total[i] + first_values[k] * poly[i] / factorial(k) # Division occurs here as the next iteration needs poly to be undivided
 
     return total
 
@@ -128,7 +128,7 @@ def rule_as_text(coefficients):
 
 
 # Tries to find a polynomial rule, and returns everything in one dictionary
-def analyse(sequence):
+def analyse_polynomial(sequence):
     result = finite_differences(sequence)
 
     if result is None:
@@ -146,17 +146,86 @@ def analyse(sequence):
     }
 
 
+
+# Tries to find a geometric rule: each term is the one before times a fixed ratio
+def analyse_geometric(sequence):
+
+    if len(sequence) < 3:
+        return {"solved": False}
+
+    # A zero would mean dividing by zero, so skip these
+    for term in sequence:
+        if term == 0:
+            return {"solved": False}
+
+    ratios = []
+    for i in range(0, len(sequence) - 1):
+        ratio = Fraction(sequence[i + 1], sequence[i])
+        ratios.append(ratio)
+
+    if not same_difference(ratios):
+        return {"solved": False}
+
+    first = sequence[0]
+    ratio = ratios[0]
+
+    next_term = first * ratio ** len(sequence)
+    if next_term.denominator == 1:
+        next_term = int(next_term)
+
+    return {
+        "solved": True,
+        "kind": "geometric",
+        "ratio": str(ratio),
+        "rule": geometric_rule_text(first, ratio),
+        "next_term": next_term,
+    }
+
+
+# Writes the rule as text, like 2 * 3^(n-1)
+def geometric_rule_text(first, ratio):
+
+    if ratio.denominator != 1 or ratio < 0:
+        ratio_text = "(" + str(ratio) + ")"
+    else:
+        ratio_text = str(ratio)
+
+    if first == ratio:
+        return ratio_text + "^n"
+
+    if first == 1:
+        return ratio_text + "^(n-1)"
+
+    return str(first) + " * " + ratio_text + "^(n-1)"
+
+
+# The function main.py will call: tries each exact method in order
+def analyse(sequence):
+
+    result = analyse_polynomial(sequence)
+    if result["solved"]:
+        return result
+
+    result = analyse_geometric(sequence)
+    if result["solved"]:
+        return result
+
+    return {"solved": False}
+
+
 if __name__ == "__main__":
     tests = [
         [1, 4, 9, 16, 25],
-        [1, 8, 27, 64, 125],
-        [2, 5, 8, 11, 14],
-        [3, 6, 11, 18, 27],
-        [5, 5, 5, 5],
-        [1, 3, 6, 10, 15],
         [10, 7, 4, 1, -2],
+        [5, 5, 5, 5],
+        [2, 6, 18, 54],
+        [3, 9, 27, 81],
+        [1, 2, 4, 8, 16],
+        [16, 8, 4, 2],
+        [1, -2, 4, -8],
+        [2, 6],
+        [3, 0, 0, 0],
         [1, 8, 27, 64, 126],
-        [1, 8, 27, 64],
         [1, 1, 2, 3, 5, 8, 13],
     ]
     for seq in tests:

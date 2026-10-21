@@ -12,6 +12,13 @@ Think of one step forward as “keep my current number, and add the difference b
 
 You know how to expand (1 + x)^m from the binomial theorem, and its coefficients are exactly C(m, k). So that’s where the formula comes from: the binomial theorem applied to “repeatedly step forward”.
 
+The monomial basis is the standard, most natural basis for the vector space of polynomials.
+
+Binomial transform (or binomial inversion formula) for expressing the general n-th term of any sequence using its forward differences.
+a(n) = f₀·C(n-1,0) + f₁·C(n-1,1) + f₂·C(n-1,2) + ...
+where:
+C(m, k) = m(m-1)(m-2)...(m-k+1) / k!
+
 ## Trees
 A tree is a foundational, non-linear, hierarchical data structure composed of collection entities called nodes that are connected by edges. Unlike linear structures like arrays, stacks, or linked lists, trees store data in a structural parent-child hierarchy with no loops or cycles.
 
@@ -37,3 +44,6 @@ A wrapper function is a subroutine that calls another function or system call wi
 
 ## Sampling
 In function tournament, when I used k = a small number e.g 2, 5, the scores were relatively high and produced a wrong tree, however, when U used k = 100, I got the right solution, however, this leads to the population filling up with copies of one rule.
+
+## Limitations
+For some sequences, there may be more than one rule for any given number of terms, however, this program only returns the first one it finds e.g. [1, 2, 4] could be eitrher geometric or polynomial and tehre si not enough information given.

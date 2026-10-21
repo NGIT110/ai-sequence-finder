@@ -228,6 +228,8 @@ def evolve(target, pop_size, depth, generations, lam, k, mutation_rate, max_node
     return best_tree, generations, False
 
 
+# Simplifies the tree
+
 
 
 
