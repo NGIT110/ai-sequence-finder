@@ -229,6 +229,68 @@ def evolve(target, pop_size, depth, generations, lam, k, mutation_rate, max_node
 
 
 # Simplifies the tree
+def simplify(tree):
+
+    if not isinstance(tree, tuple):
+        return tree
+
+    else:
+
+        op = tree[0]
+        left = simplify(tree[1])
+        right = simplify(tree[2])
+
+        if is_number(left) and is_number(right):
+            return operation(op, left, right)
+        
+        else:  
+
+            if op == "+":
+
+                if left == 0 :
+                    return right
+
+                if right == 0:
+                    return left
+
+            if op == "-":
+
+                if right == 0:
+                    return left
+
+                if left == right:
+                    return 0
+
+            if op == "*":
+
+                if left == 0 or right == 0:
+                    return 0
+
+                if left == 1:
+                    return right
+
+                if right == 1:
+                    return left
+            
+
+            return (op, left, right)
+
+
+# Helper check for simplify
+def is_number(x):
+    return not isinstance(x, tuple) and x != "n"
+
+
+# Test function for simplify
+def same_values(tree_a, tree_b):
+
+    for n in range(1, 21):
+
+        if evaluate(tree_a, n) !=  evaluate(tree_b, n):
+            return False
+
+    return True
+
 
 
 
