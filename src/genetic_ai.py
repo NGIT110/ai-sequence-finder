@@ -1,4 +1,8 @@
 import random
+from fractions import Fraction
+from sequence_analyser import rule_as_text
+
+
 
 # Global constants
 operators = ["*", "-", "+"]
@@ -292,16 +296,147 @@ def same_values(tree_a, tree_b):
     return True
 
 
+# Adds to polynomials via their coefficients
+def poly_add(a, b):
 
+    size = max(len(a), len(b))
+    result = []
+
+    for i in range(0, size):
+        total = 0
+        if i < len(a):
+            total += a[i]
+        if i < len(b):
+            total += b[i]
+        result.append(total)
+
+    return result
+
+
+# Subtracts polynomial b from a
+def poly_sub(a, b):
+
+    size = max(len(a), len(b))
+    result = []
+
+    for i in range(0, size):
+        total = 0
+        if i < len(a):
+            total = total + a[i]
+        if i < len(b):
+            total = total - b[i]
+        result.append(total)
+
+    return result
+
+
+# Multiplies two polynomials
+def poly_mul(a, b):
+    result = [Fraction(0)] * (len(a) + len(b) - 1)
+
+    for i in range(0, len(a)):
+        for j in range(0, len(b)):
+            result[i + j] = result[i + j] + a[i] * b[j]
+
+    return result
+
+
+# Checks that a tree only uses + - * numbers and n
+def is_polynomial_tree(tree):
+    if not isinstance(tree, tuple):
+        return True
+
+    if tree[0] not in ["+", "-", "*"]:
+        return False
+
+    return is_polynomial_tree(tree[1]) and is_polynomial_tree(tree[2])
+
+
+# Turns a polynomial tree into a list of coefficients
+def tree_to_poly(tree):
+
+    if not isinstance(tree, tuple):
+        if tree == "n":
+            return [Fraction(0), Fraction(1)]
+        else:
+            return [Fraction(tree)]
+
+    left = tree_to_poly(tree[1])
+    right = tree_to_poly(tree[2])
+
+    if tree[0] == "+":
+        return poly_add(left, right)
+    elif tree[0] == "-":
+        return poly_sub(left, right)
+    else:
+        return poly_mul(left, right)
+
+
+# Works out the value of a coefficient list at a given n (used for testing)
+def poly_value(poly, n):
+    total = 0
+    for i in range(0, len(poly)):
+        total = total + poly[i] * n ** i
+    return total
+
+
+# Writes any tree as text, with brackets round every operator
+def tree_to_text(tree):
+    if not isinstance(tree, tuple):
+        return str(tree)
+
+    left = tree_to_text(tree[1])
+    right = tree_to_text(tree[2])
+    return "(" + left + " " + tree[0] + " " + right + ")"
+
+
+# Gives the simplest form of a tree as text
+def simplest_form(tree):
+    tree = simplify(tree)
+
+    if is_polynomial_tree(tree):
+        return rule_as_text(tree_to_poly(tree))
+    else:
+        return tree_to_text(tree)
+
+    
+# Runs the genetic programming and returns the same kind of dictionary as the analyser
+def analyse_gp(sequence, attempts=3):
+
+    lam = 0.1
+    closest_tree = None
+    closest_score = float("inf")
+
+    for attempt in range(0, attempts):
+
+        tree, gen, solved = evolve(sequence, 200, 3, 50, lam, 5, 0.1)
+
+        if solved:
+            return {"solved": True, "kind": "genetic",
+                    "rule": simplest_form(tree),
+                    "next_term": evaluate(tree, len(sequence) + 1)}
+
+        # Not solved, so keep it if it is the closest so far
+        score = fitness(tree, sequence, lam)
+        if score < closest_score:
+            closest_tree = tree
+            closest_score = score
+
+    # Returns closest rule
+    return {"solved": False, "kind": "genetic",
+            "rule": simplest_form(closest_tree),
+            "next_term": evaluate(closest_tree, len(sequence) + 1),
+            "error": error(closest_tree, sequence)}
 
 
 if __name__ == "__main__":
+    """
     t = ("-", ("+", ("*", "n", "n"), "n"), 2)
     tree_a = ("*", "n", "n")
     tree_b = ("-", "n", 3)
     target = [1, 8, 27, 64, 125]
 
-    """
+
     print(evaluate(t, 5))
     print(sequence_from_tree(t, 5))
 
@@ -340,7 +475,13 @@ if __name__ == "__main__":
     print(crossover(tree_a, tree_b))
 
     print(evolve(target,  100, 3, 3, lam, k, mutation_rate))
-    """
+
 
     tree, gen, solved = evolve(target, 200, 3, 30, 0.1, 5, 0.1)
     print(tree, gen, solved)
+    """
+
+    t = ("*", ("+", "n", 1), ("+", "n", 1))
+    print(simplest_form(t))                     # should print n^2 + 2n + 1
+    poly = tree_to_poly(t)
+    print(poly_value(poly, 3), evaluate(t, 3))  # both should print 16
